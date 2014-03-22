@@ -135,8 +135,12 @@ func execute(expr Expr) (Expr, error) {
 		call := Call{x.Ident, args.(List)}
 		return executeCall(call)
 	case Assign:
-		globals[string(x.Ident)] = x.Expr
-		return x, nil
+		v, err := execute(x.Expr)
+		if err != nil {
+			return nil, err
+		}
+		globals[string(x.Ident)] = v
+		return Assign{x.Ident, v}, nil
 	case Add:
 		a, err := execute(x.A)
 		if err != nil {
