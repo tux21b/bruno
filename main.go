@@ -11,20 +11,12 @@ import (
 )
 
 var globals = map[string]interface{}{
-	"echo": func(x interface{}) {
-		fmt.Println("foo", x)
-	},
 	"quit": func() {
 		fmt.Println("Bye.")
 		os.Exit(0)
 	},
-	"p": func(expr Expr) {
-		p, err := NewPolynomial(expr)
-		if err != nil {
-			fmt.Println("error:", err)
-			return
-		}
-		fmt.Println(p)
+	"p": func(expr Expr) (Expr, error) {
+		return NewPolynomial(expr)
 	},
 	"multicoeff": func(expr, vars, exp Expr) (Expr, error) {
 		p, err := NewPolynomial(expr)
