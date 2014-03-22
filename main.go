@@ -145,7 +145,7 @@ func main() {
 			if err := executeCall(call); err != nil {
 				fmt.Println("error:", err)
 			}
-		} else {
+		} else if expr != nil {
 			fmt.Println(expr)
 		}
 	}

@@ -30,8 +30,8 @@ import (
 
 %%
 
-all : expr {
-	yylex.(*Lexer).result = $1
+all : /* empty */ { yylex.(*Lexer).result = nil }
+	| expr { yylex.(*Lexer).result = $1
 }
 
 expr : NUM { $$ = $1 }

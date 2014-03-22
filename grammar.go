@@ -122,7 +122,7 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 17
+const yyNprod = 18
 const yyPrivate = 57344
 
 var yyTokenNames []string
@@ -150,13 +150,13 @@ var yyPgo = []int{
 }
 var yyR1 = []int{
 
-	0, 1, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 3, 3, 4, 4,
+	0, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 3, 3, 4, 4,
 }
 var yyR2 = []int{
 
-	0, 1, 1, 1, 4, 3, 3, 3, 3, 3,
-	3, 2, 3, 0, 1, 1, 3,
+	0, 0, 1, 1, 1, 4, 3, 3, 3, 3,
+	3, 3, 2, 3, 0, 1, 1, 3,
 }
 var yyChk = []int{
 
@@ -166,9 +166,9 @@ var yyChk = []int{
 }
 var yyDef = []int{
 
-	0, -2, 1, 2, 3, 0, 13, 0, 0, 0,
-	0, 0, 0, 13, 0, 0, 14, 15, 11, 7,
-	8, 9, 10, 12, 0, 5, 6, 0, 4, 16,
+	1, -2, 2, 3, 4, 0, 14, 0, 0, 0,
+	0, 0, 0, 14, 0, 0, 15, 16, 12, 8,
+	9, 10, 11, 13, 0, 6, 7, 0, 5, 17,
 }
 var yyTok1 = []int{
 
@@ -419,79 +419,84 @@ yydefault:
 	case 1:
 		//line grammar.y:33
 		{
-			yylex.(*Lexer).result = yyS[yypt-0].val
+			yylex.(*Lexer).result = nil
 		}
 	case 2:
+		//line grammar.y:34
+		{
+			yylex.(*Lexer).result = yyS[yypt-0].val
+		}
+	case 3:
 		//line grammar.y:37
 		{
 			yyVAL.val = yyS[yypt-0].val
 		}
-	case 3:
+	case 4:
 		//line grammar.y:38
 		{
 			yyVAL.val = yyS[yypt-0].val
 		}
-	case 4:
+	case 5:
 		//line grammar.y:39
 		{
 			yyVAL.val = Call{yyS[yypt-3].val.(Ident), yyS[yypt-1].val.(List)}
 		}
-	case 5:
+	case 6:
 		//line grammar.y:40
 		{
 			yyVAL.val = yyS[yypt-1].val
 		}
-	case 6:
+	case 7:
 		//line grammar.y:41
 		{
 			yyVAL.val = yyS[yypt-1].val
 		}
-	case 7:
+	case 8:
 		//line grammar.y:42
 		{
 			yyVAL.val = Add{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 8:
+	case 9:
 		//line grammar.y:43
 		{
 			yyVAL.val = Sub{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 9:
+	case 10:
 		//line grammar.y:44
 		{
 			yyVAL.val = Mul{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 10:
+	case 11:
 		//line grammar.y:45
 		{
 			yyVAL.val = Div{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 11:
+	case 12:
 		//line grammar.y:46
 		{
 			yyVAL.val = Mul{big.NewRat(-1, 1), yyS[yypt-0].val}
 		}
-	case 12:
+	case 13:
 		//line grammar.y:47
 		{
 			yyVAL.val = Pow{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 13:
+	case 14:
 		//line grammar.y:50
 		{
 			yyVAL.val = List{}
 		}
-	case 14:
+	case 15:
 		//line grammar.y:51
 		{
 			yyVAL.val = yyS[yypt-0].val
 		}
-	case 15:
+	case 16:
 		//line grammar.y:52
 		{
 			yyVAL.val = List{yyS[yypt-0].val}
 		}
-	case 16:
+	case 17:
 		//line grammar.y:53
 		{
 			yyVAL.val = append(yyS[yypt-2].val.(List), yyS[yypt-0].val)
