@@ -23,18 +23,9 @@ var globals = map[string]interface{}{
 		if err != nil {
 			return nil, err
 		}
-		var varlist []string
-		if v, ok := vars.(List); ok {
-			varlist = make([]string, len(v))
-			for i := 0; i < len(v); i++ {
-				if x, ok := v[i].(Ident); ok {
-					varlist[i] = string(x)
-				} else {
-					return nil, fmt.Errorf("invalid vars list")
-				}
-			}
-		} else {
-			return nil, fmt.Errorf("invalid vars list")
+		varlist, err := convertVars(vars)
+		if err != nil {
+			return nil, err
 		}
 		var explist []Num
 		if v, ok := exp.(List); ok {
@@ -50,6 +41,26 @@ var globals = map[string]interface{}{
 			return nil, fmt.Errorf("invalid exp list")
 		}
 		return p.MultiCoeff(varlist, explist), nil
+	},
+	"support": func(expr, vars Expr) (Expr, error) {
+		p, err := NewPolynomial(expr)
+		if err != nil {
+			return nil, err
+		}
+		varlist, err := convertVars(vars)
+		if err != nil {
+			return nil, err
+		}
+		s := p.Support(varlist)
+		result := make(List, len(s))
+		for i := range result {
+			lst := make(List, len(s[i]))
+			for j := range s[i] {
+				lst[j] = s[i][j]
+			}
+			result[i] = lst
+		}
+		return result, nil
 	},
 }
 
@@ -96,6 +107,23 @@ func executeCall(call Call) error {
 	return err
 }
 
+func convertVars(expr Expr) ([]string, error) {
+	var list []string
+	if v, ok := expr.(List); ok {
+		list = make([]string, len(v))
+		for i := 0; i < len(v); i++ {
+			if x, ok := v[i].(Ident); ok {
+				list[i] = string(x)
+			} else {
+				return nil, fmt.Errorf("invalid vars list")
+			}
+		}
+	} else {
+		return nil, fmt.Errorf("invalid vars list")
+	}
+	return list, nil
+}
+
 func main() {
 	fmt.Println("Bruno 0.1 (2014-03-22) -- \"Übungszettel 1\"")
 	fmt.Println("Copyright (c) 2014 by Christoph Hack <christoph@tux21b.org>")
@@ -117,6 +145,8 @@ func main() {
 			if err := executeCall(call); err != nil {
 				fmt.Println("error:", err)
 			}
+		} else {
+			fmt.Println(expr)
 		}
 	}
 }

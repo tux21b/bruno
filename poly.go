@@ -117,23 +117,11 @@ func (p *Polynomial) String() string {
 
 func (p *Polynomial) MultiCoeff(vars []string, exp []Num) *Polynomial {
 	rval := &Polynomial{vars: p.vars}
-	idx := make([]int, len(vars))
-	for i := range vars {
-		found := false
-		for j := range rval.vars {
-			if vars[i] == rval.vars[j] {
-				idx[i] = j
-				found = true
-			}
-		}
-		if !found {
-			return rval
-		}
-	}
+	idx := rval.indexVars(vars)
 	for _, term := range p.terms {
 		valid := true
 		for i := range idx {
-			if term.s[idx[i]].Cmp(exp[i].Rat) < 0 {
+			if idx[i] < 0 || term.s[idx[i]].Cmp(exp[i].Rat) < 0 {
 				valid = false
 				break
 			}
@@ -153,8 +141,37 @@ func (p *Polynomial) MultiCoeff(vars []string, exp []Num) *Polynomial {
 	return rval
 }
 
+func (p *Polynomial) indexVars(vars []string) []int {
+	idx := make([]int, len(vars))
+	for i := range idx {
+		idx[i] = -1
+	}
+	for i := range vars {
+		for j := range p.vars {
+			if vars[i] == p.vars[j] {
+				idx[i] = j
+				break
+			}
+		}
+	}
+	return idx
+}
+
 func (p *Polynomial) Support(vars []string) [][]Num {
-	return nil
+	idx := p.indexVars(vars)
+	s := make([][]Num, len(p.terms))
+	for i := 0; i < len(p.terms); i++ {
+		s[i] = make([]Num, len(vars))
+		for j := 0; j < len(s[i]); j++ {
+			s[i][j].Rat = new(big.Rat)
+			if idx[j] >= 0 {
+				s[i][j].Rat.Set(p.terms[i].s[idx[j]].Rat)
+			} else {
+				s[i][j].Rat.SetInt64(0)
+			}
+		}
+	}
+	return s
 }
 
 type Term struct {
