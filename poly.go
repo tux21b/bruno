@@ -16,6 +16,9 @@ type Polynomial struct {
 }
 
 func NewPolynomial(expr Expr) (*Polynomial, error) {
+	if p, ok := expr.(*Polynomial); ok {
+		return p, nil
+	}
 	p := &Polynomial{}
 	p.vars = collectVars(expr)
 	if err := p.convert(expr); err != nil {
@@ -121,7 +124,7 @@ func (p *Polynomial) MultiCoeff(vars []string, exp []Num) *Polynomial {
 	for _, term := range p.terms {
 		valid := true
 		for i := range idx {
-			if idx[i] < 0 || term.s[idx[i]].Cmp(exp[i].Rat) < 0 {
+			if idx[i] < 0 || term.s[idx[i]].Cmp(exp[i].Rat) != 0 {
 				valid = false
 				break
 			}
@@ -133,7 +136,7 @@ func (p *Polynomial) MultiCoeff(vars []string, exp []Num) *Polynomial {
 				s[i].Rat.Set(term.s[i].Rat)
 			}
 			for i := range idx {
-				s[idx[i]].Rat.Sub(s[idx[i]].Rat, exp[i].Rat)
+				s[idx[i]].Rat.SetInt64(0)
 			}
 			rval.terms = append(rval.terms, Term{term.c, s})
 		}

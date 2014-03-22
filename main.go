@@ -64,10 +64,10 @@ var globals = map[string]interface{}{
 	},
 }
 
-func executeCall(call Call) error {
+func executeCall(call Call) (Expr, error) {
 	fn, ok := globals[string(call.Ident)]
 	if !ok {
-		return fmt.Errorf("undefined %q", call.Ident)
+		return nil, fmt.Errorf("undefined %q", call.Ident)
 	}
 	v := reflect.ValueOf(fn)
 	args := make([]reflect.Value, len(call.Args))
@@ -76,7 +76,7 @@ func executeCall(call Call) error {
 	}
 	t := v.Type()
 	if t.NumIn() != len(args) {
-		return fmt.Errorf("invalid number of args. expected %d, got %d.\n",
+		return nil, fmt.Errorf("invalid number of args. expected %d, got %d.\n",
 			t.NumIn(), len(args))
 	}
 	result := v.Call(args)
@@ -87,24 +87,21 @@ func executeCall(call Call) error {
 	if len(result) >= 1 && !result[0].IsNil() {
 		x, ok := result[0].Interface().(Expr)
 		if !ok {
-			return fmt.Errorf("invalid result")
+			return nil, fmt.Errorf("invalid result")
 		}
 		val = x
 	}
 	if len(result) >= 2 && !result[1].IsNil() {
 		x, ok := result[1].Interface().(error)
 		if !ok {
-			return fmt.Errorf("invalid result")
+			return nil, fmt.Errorf("invalid result")
 		}
 		err = x
 	}
 	if len(result) >= 3 {
-		return fmt.Errorf("invalid result")
+		return nil, fmt.Errorf("invalid result")
 	}
-	if err == nil && val != nil {
-		fmt.Println(val)
-	}
-	return err
+	return val, err
 }
 
 func convertVars(expr Expr) ([]string, error) {
@@ -124,6 +121,86 @@ func convertVars(expr Expr) ([]string, error) {
 	return list, nil
 }
 
+func execute(expr Expr) (Expr, error) {
+	switch x := expr.(type) {
+	case Ident:
+		if e, ok := globals[string(x)].(Expr); ok {
+			return e, nil
+		}
+	case Call:
+		args, err := execute(x.Args)
+		if err != nil {
+			return nil, err
+		}
+		call := Call{x.Ident, args.(List)}
+		return executeCall(call)
+	case Assign:
+		globals[string(x.Ident)] = x.Expr
+		return x, nil
+	case Add:
+		a, err := execute(x.A)
+		if err != nil {
+			return nil, err
+		}
+		b, err := execute(x.B)
+		if err != nil {
+			return nil, err
+		}
+		return Add{a, b}, nil
+	case Sub:
+		a, err := execute(x.A)
+		if err != nil {
+			return nil, err
+		}
+		b, err := execute(x.B)
+		if err != nil {
+			return nil, err
+		}
+		return Sub{a, b}, nil
+	case Mul:
+		a, err := execute(x.A)
+		if err != nil {
+			return nil, err
+		}
+		b, err := execute(x.B)
+		if err != nil {
+			return nil, err
+		}
+		return Mul{a, b}, nil
+	case Div:
+		a, err := execute(x.A)
+		if err != nil {
+			return nil, err
+		}
+		b, err := execute(x.B)
+		if err != nil {
+			return nil, err
+		}
+		return Div{a, b}, nil
+	case Pow:
+		a, err := execute(x.A)
+		if err != nil {
+			return nil, err
+		}
+		b, err := execute(x.B)
+		if err != nil {
+			return nil, err
+		}
+		return Pow{a, b}, nil
+	case List:
+		result := make(List, len(x))
+		for i := range x {
+			v, err := execute(x[i])
+			if err != nil {
+				return nil, err
+			}
+			result[i] = v
+		}
+		return result, nil
+	}
+	return expr, nil
+}
+
 func main() {
 	fmt.Println("Bruno 0.1 (2014-03-22) -- \"Übungszettel 1\"")
 	fmt.Println("Copyright (c) 2014 by Christoph Hack <christoph@tux21b.org>")
@@ -141,12 +218,10 @@ func main() {
 			fmt.Println("error:", err)
 			continue
 		}
-		if call, ok := expr.(Call); ok {
-			if err := executeCall(call); err != nil {
-				fmt.Println("error:", err)
-			}
-		} else if expr != nil {
-			fmt.Println(expr)
+		if result, err := execute(expr); err != nil {
+			fmt.Println("error:", err)
+		} else if result != nil {
+			fmt.Println(result)
 		}
 	}
 }

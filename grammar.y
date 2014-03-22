@@ -21,8 +21,9 @@ import (
 }
 
 %token <val> NUM ID
-%type <val> expr items items2
+%type <val> stmt expr items items2
 
+%right '='
 %left '+'  '-'
 %left '*'  '/'
 %left NEG
@@ -31,8 +32,12 @@ import (
 %%
 
 all : /* empty */ { yylex.(*Lexer).result = nil }
-	| expr { yylex.(*Lexer).result = $1
+	| stmt { yylex.(*Lexer).result = $1
 }
+
+stmt
+	: expr { $$ = $1 }
+	| ID '=' expr { $$ = Assign{$1.(Ident), $3}}
 
 expr : NUM { $$ = $1 }
 	 | ID { $$ = $1 }
@@ -65,7 +70,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	for l.pos < len(l.input) {
 		r, n := utf8.DecodeRuneInString(l.input[l.pos:])
 		switch {
-		case strings.ContainsRune("+-*/^(),[]", r):
+		case strings.ContainsRune("+-*/^(),[]=", r):
 			l.pos += n
 			return int(r)
 		case unicode.IsSpace(r):

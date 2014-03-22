@@ -80,3 +80,12 @@ type Call struct {
 func (c Call) String() string {
 	return fmt.Sprintf("%v(%v)", c.Ident, c.Args)
 }
+
+type Assign struct {
+	Ident Ident
+	Expr  Expr
+}
+
+func (a Assign) String() string {
+	return fmt.Sprintf("%s = %v", a.Ident, a.Expr)
+}

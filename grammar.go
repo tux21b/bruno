@@ -29,6 +29,7 @@ const NEG = 57348
 var yyToknames = []string{
 	"NUM",
 	"ID",
+	" =",
 	" +",
 	" -",
 	" *",
@@ -42,7 +43,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line grammar.y:55
+//line grammar.y:60
 
 type Lexer struct {
 	input  string
@@ -55,7 +56,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	for l.pos < len(l.input) {
 		r, n := utf8.DecodeRuneInString(l.input[l.pos:])
 		switch {
-		case strings.ContainsRune("+-*/^(),[]", r):
+		case strings.ContainsRune("+-*/^(),[]=", r):
 			l.pos += n
 			return int(r)
 		case unicode.IsSpace(r):
@@ -122,53 +123,56 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 18
+const yyNprod = 20
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 41
+const yyLast = 47
 
 var yyAct = []int{
 
-	17, 2, 27, 26, 28, 13, 14, 12, 18, 19,
-	20, 21, 22, 23, 3, 4, 16, 7, 8, 9,
-	10, 11, 5, 12, 6, 25, 15, 1, 29, 8,
-	9, 10, 11, 0, 12, 10, 11, 0, 12, 0,
-	24,
+	20, 3, 31, 9, 10, 11, 12, 16, 13, 21,
+	22, 23, 24, 25, 26, 27, 5, 17, 30, 18,
+	8, 9, 10, 11, 12, 6, 13, 7, 29, 5,
+	4, 32, 33, 8, 14, 28, 11, 12, 6, 13,
+	7, 15, 15, 13, 19, 2, 1,
 }
 var yyPact = []int{
 
-	10, -1000, 23, -1000, -7, 10, 10, 10, 10, 10,
-	10, 10, 10, 10, 12, -12, -14, 23, -4, 27,
-	27, -4, -4, -4, -9, -1000, -1000, 10, -1000, 23,
+	25, -1000, -1000, -4, 28, -1000, 12, 12, 12, 12,
+	12, 12, 12, 12, 12, 12, 14, 29, 2, -15,
+	-4, 31, 27, 27, 31, 31, 31, -4, 17, -1000,
+	-1000, 12, -1000, -4,
 }
 var yyPgo = []int{
 
-	0, 27, 0, 26, 16,
+	0, 46, 45, 0, 19, 44,
 }
 var yyR1 = []int{
 
-	0, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 2, 3, 3, 4, 4,
+	0, 1, 1, 2, 2, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 4, 4, 5, 5,
 }
 var yyR2 = []int{
 
-	0, 0, 1, 1, 1, 4, 3, 3, 3, 3,
-	3, 3, 2, 3, 0, 1, 1, 3,
+	0, 0, 1, 1, 3, 1, 1, 4, 3, 3,
+	3, 3, 3, 3, 2, 3, 0, 1, 1, 3,
 }
 var yyChk = []int{
 
-	-1000, -1, -2, 4, 5, 12, 14, 7, 6, 7,
-	8, 9, 11, 12, -2, -3, -4, -2, -2, -2,
-	-2, -2, -2, -2, -3, 13, 15, 16, 13, -2,
+	-1000, -1, -2, -3, 5, 4, 13, 15, 8, 7,
+	8, 9, 10, 12, 6, 13, -3, 5, -4, -5,
+	-3, -3, -3, -3, -3, -3, -3, -3, -4, 14,
+	16, 17, 14, -3,
 }
 var yyDef = []int{
 
-	1, -2, 2, 3, 4, 0, 14, 0, 0, 0,
-	0, 0, 0, 14, 0, 0, 15, 16, 12, 8,
-	9, 10, 11, 13, 0, 6, 7, 0, 5, 17,
+	1, -2, 2, 3, 6, 5, 0, 16, 0, 0,
+	0, 0, 0, 0, 0, 16, 0, 6, 0, 17,
+	18, 14, 10, 11, 12, 13, 15, 4, 0, 8,
+	9, 0, 7, 19,
 }
 var yyTok1 = []int{
 
@@ -176,16 +180,16 @@ var yyTok1 = []int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	12, 13, 8, 6, 16, 7, 3, 9, 3, 3,
+	13, 14, 9, 7, 17, 8, 3, 10, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 6, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 14, 3, 15, 11,
+	3, 15, 3, 16, 12,
 }
 var yyTok2 = []int{
 
-	2, 3, 4, 5, 10,
+	2, 3, 4, 5, 11,
 }
 var yyTok3 = []int{
 	0,
@@ -417,87 +421,97 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		//line grammar.y:33
+		//line grammar.y:34
 		{
 			yylex.(*Lexer).result = nil
 		}
 	case 2:
-		//line grammar.y:34
+		//line grammar.y:35
 		{
 			yylex.(*Lexer).result = yyS[yypt-0].val
 		}
 	case 3:
-		//line grammar.y:37
+		//line grammar.y:39
 		{
 			yyVAL.val = yyS[yypt-0].val
 		}
 	case 4:
-		//line grammar.y:38
+		//line grammar.y:40
+		{
+			yyVAL.val = Assign{yyS[yypt-2].val.(Ident), yyS[yypt-0].val}
+		}
+	case 5:
+		//line grammar.y:42
 		{
 			yyVAL.val = yyS[yypt-0].val
 		}
-	case 5:
-		//line grammar.y:39
+	case 6:
+		//line grammar.y:43
+		{
+			yyVAL.val = yyS[yypt-0].val
+		}
+	case 7:
+		//line grammar.y:44
 		{
 			yyVAL.val = Call{yyS[yypt-3].val.(Ident), yyS[yypt-1].val.(List)}
 		}
-	case 6:
-		//line grammar.y:40
-		{
-			yyVAL.val = yyS[yypt-1].val
-		}
-	case 7:
-		//line grammar.y:41
-		{
-			yyVAL.val = yyS[yypt-1].val
-		}
 	case 8:
-		//line grammar.y:42
+		//line grammar.y:45
+		{
+			yyVAL.val = yyS[yypt-1].val
+		}
+	case 9:
+		//line grammar.y:46
+		{
+			yyVAL.val = yyS[yypt-1].val
+		}
+	case 10:
+		//line grammar.y:47
 		{
 			yyVAL.val = Add{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 9:
-		//line grammar.y:43
+	case 11:
+		//line grammar.y:48
 		{
 			yyVAL.val = Sub{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 10:
-		//line grammar.y:44
+	case 12:
+		//line grammar.y:49
 		{
 			yyVAL.val = Mul{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 11:
-		//line grammar.y:45
+	case 13:
+		//line grammar.y:50
 		{
 			yyVAL.val = Div{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 12:
-		//line grammar.y:46
+	case 14:
+		//line grammar.y:51
 		{
 			yyVAL.val = Mul{big.NewRat(-1, 1), yyS[yypt-0].val}
 		}
-	case 13:
-		//line grammar.y:47
+	case 15:
+		//line grammar.y:52
 		{
 			yyVAL.val = Pow{yyS[yypt-2].val, yyS[yypt-0].val}
 		}
-	case 14:
-		//line grammar.y:50
+	case 16:
+		//line grammar.y:55
 		{
 			yyVAL.val = List{}
 		}
-	case 15:
-		//line grammar.y:51
+	case 17:
+		//line grammar.y:56
 		{
 			yyVAL.val = yyS[yypt-0].val
 		}
-	case 16:
-		//line grammar.y:52
+	case 18:
+		//line grammar.y:57
 		{
 			yyVAL.val = List{yyS[yypt-0].val}
 		}
-	case 17:
-		//line grammar.y:53
+	case 19:
+		//line grammar.y:58
 		{
 			yyVAL.val = append(yyS[yypt-2].val.(List), yyS[yypt-0].val)
 		}
