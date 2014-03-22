@@ -178,6 +178,29 @@ func (p *Polynomial) Support(vars []string) [][]Num {
 	return s
 }
 
+func (p *Polynomial) LPP() *Polynomial {
+	var terms []Term
+	if n := len(p.terms) - 1; n > 0 {
+		terms = []Term{Term{Num{big.NewRat(1, 1)}, p.terms[n].s}}
+	}
+	return &Polynomial{vars: p.vars, terms: terms}
+}
+
+func (p *Polynomial) LC() Num {
+	if n := len(p.terms) - 1; n > 0 {
+		return p.terms[n].c
+	}
+	return Num{big.NewRat(0, 1)}
+}
+
+func (p *Polynomial) LM() *Polynomial {
+	var terms []Term
+	if n := len(p.terms) - 1; n > 0 {
+		terms = []Term{Term{p.terms[n].c, p.terms[n].s}}
+	}
+	return &Polynomial{vars: p.vars, terms: terms}
+}
+
 type Term struct {
 	c Num
 	s []Num

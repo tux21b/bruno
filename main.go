@@ -78,6 +78,27 @@ var globals = map[string]interface{}{
 		SortTerms(p.terms, TotalTermOrder)
 		return p, nil
 	},
+	"lpp": func(expr Expr) (Expr, error) {
+		p, err := NewPolynomial(expr)
+		if err != nil {
+			return nil, err
+		}
+		return p.LPP(), nil
+	},
+	"lc": func(expr Expr) (Expr, error) {
+		p, err := NewPolynomial(expr)
+		if err != nil {
+			return nil, err
+		}
+		return p.LC(), nil
+	},
+	"lm": func(expr Expr) (Expr, error) {
+		p, err := NewPolynomial(expr)
+		if err != nil {
+			return nil, err
+		}
+		return p.LM(), nil
+	},
 }
 
 func executeCall(call Call) (Expr, error) {
