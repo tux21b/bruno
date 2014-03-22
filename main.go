@@ -62,6 +62,22 @@ var globals = map[string]interface{}{
 		}
 		return result, nil
 	},
+	"lexorder": func(expr Expr) (Expr, error) {
+		p, err := NewPolynomial(expr)
+		if err != nil {
+			return nil, err
+		}
+		SortTerms(p.terms, LexTermOrder)
+		return p, nil
+	},
+	"totalorder": func(expr Expr) (Expr, error) {
+		p, err := NewPolynomial(expr)
+		if err != nil {
+			return nil, err
+		}
+		SortTerms(p.terms, TotalTermOrder)
+		return p, nil
+	},
 }
 
 func executeCall(call Call) (Expr, error) {

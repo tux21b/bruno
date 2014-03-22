@@ -24,6 +24,7 @@ func NewPolynomial(expr Expr) (*Polynomial, error) {
 	if err := p.convert(expr); err != nil {
 		return nil, err
 	}
+	SortTerms(p.terms, LexTermOrder)
 	return p, nil
 }
 
@@ -182,8 +183,55 @@ type Term struct {
 	s []Num
 }
 
-type TermOrder interface {
-	Less(a, b Term) bool
+type TermOrder func(a, b Term) bool
+
+func LexTermOrder(a, b Term) bool {
+	for i := 0; i < len(a.s); i++ {
+		x := a.s[i].Rat.Cmp(b.s[i].Rat)
+		if x < 0 {
+			return true
+		} else if x > 0 {
+			return false
+		}
+	}
+	return false
+}
+
+func TotalTermOrder(a, b Term) bool {
+	sumA := big.NewRat(0, 1)
+	sumB := big.NewRat(0, 1)
+	for i := 0; i < len(a.s); i++ {
+		sumA.Add(sumA, a.s[i].Rat)
+		sumB.Add(sumB, b.s[i].Rat)
+	}
+	x := sumA.Cmp(sumB)
+	if x < 0 {
+		return true
+	} else if x > 0 {
+		return false
+	}
+	return LexTermOrder(a, b)
+}
+
+type termSorter struct {
+	terms []Term
+	order TermOrder
+}
+
+func (s termSorter) Less(i, j int) bool {
+	return s.order(s.terms[i], s.terms[j])
+}
+
+func (s termSorter) Swap(i, j int) {
+	s.terms[i], s.terms[j] = s.terms[j], s.terms[i]
+}
+
+func (s termSorter) Len() int {
+	return len(s.terms)
+}
+
+func SortTerms(terms []Term, order TermOrder) {
+	sort.Sort(termSorter{terms, order})
 }
 
 func collectVars(expr Expr) []string {
