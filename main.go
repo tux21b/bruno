@@ -32,11 +32,7 @@ func (b *Bruno) reset() {
 		"p": func(expr Expr) (Expr, error) {
 			return NewPolynomial(expr)
 		},
-		"multicoeff": func(expr, vars, exp Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
+		"multicoeff": func(p *Polynomial, vars, exp Expr) (Expr, error) {
 			varlist, err := convertVars(vars)
 			if err != nil {
 				return nil, err
@@ -56,6 +52,17 @@ func (b *Bruno) reset() {
 			}
 			return p.MultiCoeff(varlist, explist), nil
 		},
+		"multicoeff2": func(p, term *Polynomial) (Expr, error) {
+			if len(term.items) != 1 {
+				return nil, fmt.Errorf("invalid term")
+			}
+			varlist := term.vars
+			explist := make([]Num, len(term.vars))
+			for i := range explist {
+				explist[i] = Num{&term.items[0].T[i]}
+			}
+			return p.MultiCoeff(varlist, explist), nil
+		}
 		"support": func(p *Polynomial, vars []string) (Expr, error) {
 			s := p.Support(vars)
 			result := make(List, len(s))
