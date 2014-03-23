@@ -81,7 +81,7 @@ var brunoTests = []struct {
 	},
 	{
 		"f1 = p(2*x^2*y + 3*x + 4*y)",
-		"f1 = 2*x^2 + 3*x + 4*y",
+		"f1 = 2*x^2*y + 3*x + 4*y",
 	},
 	{
 		"lpp(f1)",
