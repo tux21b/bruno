@@ -79,6 +79,34 @@ var brunoTests = []struct {
 		"support(f, [y])",
 		"[[0] [2] [1] [10] [0]]",
 	},
+	{
+		"f1 = p(2*x^2*y + 3*x + 4*y)",
+		"f1 = 2*x^2 + 3*x + 4*y",
+	},
+	{
+		"lpp(f1)",
+		"1*x^2*y",
+	},
+	{
+		"lc(f1)",
+		"2",
+	},
+	{
+		"lm(f1)",
+		"2*x^2*y",
+	},
+	{
+		"higher(f1, y)",
+		"2*x^2*y + 3*x",
+	},
+	{
+		"lower(f1, x*y)",
+		"3*x + 4*y",
+	},
+	{
+		"remainder(f1)",
+		"3*x + 4*y",
+	},
 }
 
 func TestBruno(t *testing.T) {

@@ -76,11 +76,13 @@ func (b *Bruno) reset() {
 			return result, nil
 		},
 		"lexorder": func(p *Polynomial) Expr {
-			SortMonomial(p.items, LexTermOrder)
+			p.order = LexTermOrder
+			SortMonomial(p.items, p.order)
 			return p
 		},
 		"totalorder": func(p *Polynomial) Expr {
-			SortMonomial(p.items, TotalTermOrder)
+			p.order = TotalTermOrder
+			SortMonomial(p.items, p.order)
 			return p
 		},
 		"lpp": func(p *Polynomial) Expr {
