@@ -69,11 +69,11 @@ func (b *Bruno) reset() {
 			return result, nil
 		},
 		"lexorder": func(p *Polynomial) Expr {
-			SortTerms(p.terms, LexTermOrder)
+			SortMonomial(p.items, LexTermOrder)
 			return p
 		},
 		"totalorder": func(p *Polynomial) Expr {
-			SortTerms(p.terms, TotalTermOrder)
+			SortMonomial(p.items, TotalTermOrder)
 			return p
 		},
 		"lpp": func(p *Polynomial) Expr {
@@ -84,6 +84,31 @@ func (b *Bruno) reset() {
 		},
 		"lm": func(p *Polynomial) Expr {
 			return p.LM()
+		},
+		"higher": func(p *Polynomial, term Expr) (Expr, error) {
+			t, err := convertTerm(p, term)
+			if err != nil {
+				return nil, err
+			}
+			return p.Higher(t), nil
+		},
+		"lower": func(p *Polynomial, term Expr) (Expr, error) {
+			t, err := convertTerm(p, term)
+			if err != nil {
+				return nil, err
+			}
+			return p.Lower(t), nil
+		},
+		"between": func(p *Polynomial, term1, term2 Expr) (Expr, error) {
+			t1, err := convertTerm(p, term1)
+			if err != nil {
+				return nil, err
+			}
+			t2, err := convertTerm(p, term2)
+			if err != nil {
+				return nil, err
+			}
+			return p.Between(t1, t2), nil
 		},
 	}
 }
@@ -241,6 +266,17 @@ func (b *Bruno) Exec(input string) (Expr, error) {
 		return nil, err
 	}
 	return b.ExecExpr(expr)
+}
+
+func convertTerm(p *Polynomial, expr Expr) (Term, error) {
+	q := &Polynomial{vars: p.vars, order: p.order}
+	if err := q.convert(expr); err != nil {
+		return nil, err
+	}
+	if len(q.items) != 1 {
+		return nil, fmt.Errorf("invalid term")
+	}
+	return q.items[0].T, nil
 }
 
 func convertVars(expr Expr) ([]string, error) {
