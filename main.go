@@ -56,16 +56,8 @@ func (b *Bruno) reset() {
 			}
 			return p.MultiCoeff(varlist, explist), nil
 		},
-		"support": func(expr, vars Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
-			varlist, err := convertVars(vars)
-			if err != nil {
-				return nil, err
-			}
-			s := p.Support(varlist)
+		"support": func(p *Polynomial, vars []string) (Expr, error) {
+			s := p.Support(vars)
 			result := make(List, len(s))
 			for i := range result {
 				lst := make(List, len(s[i]))
@@ -76,42 +68,22 @@ func (b *Bruno) reset() {
 			}
 			return result, nil
 		},
-		"lexorder": func(expr Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
+		"lexorder": func(p *Polynomial) Expr {
 			SortTerms(p.terms, LexTermOrder)
-			return p, nil
+			return p
 		},
-		"totalorder": func(expr Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
+		"totalorder": func(p *Polynomial) Expr {
 			SortTerms(p.terms, TotalTermOrder)
-			return p, nil
+			return p
 		},
-		"lpp": func(expr Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
-			return p.LPP(), nil
+		"lpp": func(p *Polynomial) Expr {
+			return p.LPP()
 		},
-		"lc": func(expr Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
-			return p.LC(), nil
+		"lc": func(p *Polynomial) Expr {
+			return p.LC()
 		},
-		"lm": func(expr Expr) (Expr, error) {
-			p, err := NewPolynomial(expr)
-			if err != nil {
-				return nil, err
-			}
-			return p.LM(), nil
+		"lm": func(p *Polynomial) Expr {
+			return p.LM()
 		},
 	}
 }
@@ -122,15 +94,38 @@ func (b *Bruno) executeCall(call Call) (Expr, error) {
 		return nil, fmt.Errorf("undefined %q", call.Ident)
 	}
 	v := reflect.ValueOf(fn)
+	fnT := v.Type()
+
+	if fnT.NumIn() != len(call.Args) {
+		return nil, fmt.Errorf("invalid number of args. expected %d, got %d.\n",
+			fnT.NumIn(), len(call.Args))
+	}
+
 	args := make([]reflect.Value, len(call.Args))
 	for i := 0; i < len(args); i++ {
-		args[i] = reflect.ValueOf(call.Args[i])
+		gotV := reflect.ValueOf(call.Args[i])
+		gotT := gotV.Type()
+		wantT := fnT.In(i)
+		switch {
+		case gotT.AssignableTo(wantT):
+			args[i] = gotV
+		case wantT == reflect.TypeOf(&Polynomial{}):
+			p, err := NewPolynomial(call.Args[i])
+			if err != nil {
+				return nil, fmt.Errorf("invalid parameter %d: %v", i+1, err)
+			}
+			args[i] = reflect.ValueOf(p)
+		case wantT == reflect.TypeOf([]string{}):
+			vars, err := convertVars(call.Args[i])
+			if err != nil {
+				return nil, fmt.Errorf("invalid parameter %d: %v", i+1, err)
+			}
+			args[i] = reflect.ValueOf(vars)
+		default:
+			return nil, fmt.Errorf("invalid parameter %d.", i+1)
+		}
 	}
-	t := v.Type()
-	if t.NumIn() != len(args) {
-		return nil, fmt.Errorf("invalid number of args. expected %d, got %d.\n",
-			t.NumIn(), len(args))
-	}
+
 	result := v.Call(args)
 	var (
 		val Expr
