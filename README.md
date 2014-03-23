@@ -1,7 +1,7 @@
 bruno
 =====
 
-[![Build Status](https://travis-ci.org/tux21b/bruno.png?branch=master)](https://travis-ci.org/tux21b/bruno)
+[![Build Status](https://travis-ci.org/tux21b/bruno.svg)](https://travis-ci.org/tux21b/bruno)
 [![GoDoc](http://godoc.org/github.com/tux21b/bruno?status.png)](http://godoc.org/github.com/tux21b/bruno)
 
 Bruno is a symbolic solver for algebraic equations based on Gröebner bases. This
