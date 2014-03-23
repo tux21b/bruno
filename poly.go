@@ -217,6 +217,14 @@ func (p *Polynomial) Between(t1, t2 Term) *Polynomial {
 	return p.Lower(t2).Higher(t1)
 }
 
+func (p *Polynomial) Remainder() *Polynomial {
+	rval := &Polynomial{vars: p.vars, order: p.order}
+	if len(p.items) > 0 {
+		rval.items = p.items[1:]
+	}
+	return rval
+}
+
 type Monomial struct {
 	C big.Rat
 	T Term

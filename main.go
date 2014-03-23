@@ -62,7 +62,7 @@ func (b *Bruno) reset() {
 				explist[i] = Num{&term.items[0].T[i]}
 			}
 			return p.MultiCoeff(varlist, explist), nil
-		}
+		},
 		"support": func(p *Polynomial, vars []string) (Expr, error) {
 			s := p.Support(vars)
 			result := make(List, len(s))
@@ -116,6 +116,9 @@ func (b *Bruno) reset() {
 				return nil, err
 			}
 			return p.Between(t1, t2), nil
+		},
+		"remainder": func(p *Polynomial) Expr {
+			return p.Remainder()
 		},
 	}
 }
