@@ -48,7 +48,7 @@ expr : NUM { $$ = $1 }
      | expr '-' expr { $$ = Sub{$1, $3} }
 	 | expr '*' expr { $$ = Mul{$1, $3} }
 	 | expr '/' expr { $$ = Div{$1, $3} }
-	 | '-' expr %prec NEG { $$ = Mul{big.NewRat(-1, 1), $2} }
+	 | '-' expr %prec NEG { $$ = Mul{Num{big.NewRat(-1, 1)}, $2} }
 	 | expr '^' expr { $$ = Pow{$1, $3} }
 	 ;
 

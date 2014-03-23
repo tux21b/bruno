@@ -107,6 +107,18 @@ var brunoTests = []struct {
 		"remainder(f1)",
 		"3*x + 4*y",
 	},
+	{
+		"g = p(-8*x^2 + -1*x*y + 12*y^2)",
+		"g = -8*x^2 + -1*x*y + 12*y^2",
+	},
+	{
+		"f5 = 40*x + 36*y^3 + 53*y",
+		"f5 = (((40 * x) + (36 * (y ^ 3))) + (53 * y))",
+	},
+	{
+		"reduceterm(g, f5, x^2)",
+		"36/5*x*y^3 + 48/5*x*y + 12*y^2",
+	},
 }
 
 func TestBruno(t *testing.T) {

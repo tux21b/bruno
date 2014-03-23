@@ -488,7 +488,7 @@ yydefault:
 	case 14:
 		//line grammar.y:51
 		{
-			yyVAL.val = Mul{big.NewRat(-1, 1), yyS[yypt-0].val}
+			yyVAL.val = Mul{Num{big.NewRat(-1, 1)}, yyS[yypt-0].val}
 		}
 	case 15:
 		//line grammar.y:52

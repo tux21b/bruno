@@ -6,6 +6,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"math/big"
 	"sort"
 )
@@ -25,7 +26,7 @@ func NewPolynomial(expr Expr) (*Polynomial, error) {
 	if err := p.convert(expr); err != nil {
 		return nil, err
 	}
-	SortMonomial(p.items, p.order)
+	p.normalize()
 	return p, nil
 }
 
@@ -223,6 +224,71 @@ func (p *Polynomial) Remainder() *Polynomial {
 		rval.items = p.items[1:]
 	}
 	return rval
+}
+
+func (p *Polynomial) ReduceTerm(f *Polynomial, t Term) (*Polynomial, error) {
+	if len(p.vars) != len(t) {
+		return nil, fmt.Errorf("invalid term")
+	}
+	if len(f.items) == 0 {
+		return nil, fmt.Errorf("invalid polynomial f")
+	}
+	idx := p.findTerm(t)
+	if idx < 0 {
+		return nil, fmt.Errorf("invalid term (not in support)")
+	}
+	u := Monomial{T: make(Term, len(p.vars))}
+	u.C.Quo(&p.items[idx].C, &f.items[0].C)
+	u.C.Neg(&u.C)
+	for j := 0; j < len(p.vars); j++ {
+		u.T[j].Sub(&p.items[idx].T[j], &f.items[0].T[j])
+	}
+	h := &Polynomial{vars: p.vars, order: p.order}
+	for i := 0; i < len(f.items); i++ {
+		m := Monomial{T: make(Term, len(p.vars))}
+		m.C.Mul(&u.C, &f.items[i].C)
+		for j := 0; j < len(p.vars); j++ {
+			m.T[j].Add(&u.T[j], &f.items[i].T[j])
+		}
+		h.items = append(h.items, m)
+	}
+	for i := 0; i < len(p.items); i++ {
+		pos := h.findTerm(p.items[i].T)
+		if pos < 0 {
+			h.items = append(h.items, p.items[i])
+		} else {
+			h.items[pos].C.Add(&h.items[pos].C, &p.items[i].C)
+		}
+	}
+	h.normalize()
+	return h, nil
+}
+
+func (p *Polynomial) normalize() {
+	for i := 0; i < len(p.items); i++ {
+		if p.items[i].C.Sign() == 0 {
+			n := len(p.items) - 1
+			p.items[i], p.items[n] = p.items[n], p.items[i]
+			p.items = p.items[:n]
+			i--
+		}
+	}
+	SortMonomial(p.items, p.order)
+}
+
+func (p *Polynomial) findTerm(t Term) int {
+	i := sort.Search(len(p.items), func(i int) bool {
+		return !p.order(t, p.items[i].T)
+	})
+	if i < 0 || i >= len(p.items) {
+		return -1
+	}
+	for j := 0; j < len(p.vars); j++ {
+		if p.items[i].T[j].Cmp(&t[j]) != 0 {
+			return -1
+		}
+	}
+	return i
 }
 
 type Monomial struct {

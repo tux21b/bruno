@@ -6,6 +6,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/big"
 	"os"
 	"reflect"
 )
@@ -122,6 +123,17 @@ func (b *Bruno) reset() {
 		"remainder": func(p *Polynomial) Expr {
 			return p.Remainder()
 		},
+		"reduceterm": func(p *Polynomial, fe Expr, term Expr) (Expr, error) {
+			f := &Polynomial{vars: p.vars, order: p.order}
+			if err := f.convert(fe); err != nil {
+				return nil, err
+			}
+			t, err := convertTerm(p, term)
+			if err != nil {
+				return nil, err
+			}
+			return p.ReduceTerm(f, t)
+		},
 	}
 }
 
@@ -236,6 +248,11 @@ func (b *Bruno) ExecExpr(expr Expr) (Expr, error) {
 		b, err := b.ExecExpr(x.B)
 		if err != nil {
 			return nil, err
+		}
+		an, ok1 := a.(Num)
+		bn, ok2 := b.(Num)
+		if ok1 && ok2 {
+			return Num{new(big.Rat).Mul(an.Rat, bn.Rat)}, nil
 		}
 		return Mul{a, b}, nil
 	case Div:
