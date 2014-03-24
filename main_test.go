@@ -119,6 +119,10 @@ var brunoTests = []struct {
 		"reduceterm(g, f5, x^2)",
 		"36/5*x*y^3 + 48/5*x*y + 12*y^2",
 	},
+	{
+		"reduce(g, f5)",
+		"36/5*x*y^3 + 48/5*x*y + 12*y^2",
+	},
 }
 
 func TestBruno(t *testing.T) {

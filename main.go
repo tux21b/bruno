@@ -134,6 +134,13 @@ func (b *Bruno) reset() {
 			}
 			return p.ReduceTerm(f, t)
 		},
+		"reduce": func(p *Polynomial, fe Expr) (Expr, error) {
+			f := &Polynomial{vars: p.vars, order: p.order}
+			if err := f.convert(fe); err != nil {
+				return nil, err
+			}
+			return p.Reduce(f), nil
+		},
 	}
 }
 

@@ -264,6 +264,17 @@ func (p *Polynomial) ReduceTerm(f *Polynomial, t Term) (*Polynomial, error) {
 	return h, nil
 }
 
+func (p *Polynomial) Reduce(f *Polynomial) *Polynomial {
+	if len(p.items) == 0 {
+		return p
+	}
+	h, err := p.ReduceTerm(f, p.items[0].T)
+	if err != nil {
+		return p
+	}
+	return h
+}
+
 func (p *Polynomial) normalize() {
 	for i := 0; i < len(p.items); i++ {
 		if p.items[i].C.Sign() == 0 {
