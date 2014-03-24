@@ -131,6 +131,14 @@ var brunoTests = []struct {
 		"reduce(g, f5)",
 		"36/5*x*y^3 + 48/5*x*y + 12*y^2",
 	},
+	{
+		"f = lexorder(-1*z2^2 + 1*x^2*y^2 + 0*z)",
+		"f = 1*x^2*y^2 + -1*z2^2",
+	},
+	{
+		"reducemany(f, [x + -1*y^2*z2, y + -1*z*z2, z + -1*z2^3, z2^3 + -1*z2])",
+		"0",
+	},
 }
 
 func TestBruno(t *testing.T) {

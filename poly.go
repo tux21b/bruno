@@ -39,13 +39,13 @@ func (p *Polynomial) convert(expr Expr) error {
 			return err
 		}
 		return nil
-
 	}
 	m := Monomial{*big.NewRat(1, 1), make([]big.Rat, len(p.vars))}
 	if err := p.convertMonomial(expr, &m); err != nil {
 		return err
 	}
 	p.items = append(p.items, m)
+	p.normalize()
 	return nil
 }
 
@@ -260,19 +260,51 @@ func (p *Polynomial) ReduceTerm(f *Polynomial, t Term) (*Polynomial, error) {
 			h.items[pos].C.Add(&h.items[pos].C, &p.items[i].C)
 		}
 	}
+	if !h.valid() {
+		return nil, fmt.Errorf("invalid reduction %v", h)
+	}
 	h.normalize()
 	return h, nil
 }
 
 func (p *Polynomial) Reduce(f *Polynomial) *Polynomial {
-	if len(p.items) == 0 {
-		return p
+	for i := 0; i < len(p.items); i++ {
+		if h, err := p.ReduceTerm(f, p.items[i].T); err == nil {
+			return h
+		}
 	}
-	h, err := p.ReduceTerm(f, p.items[0].T)
-	if err != nil {
-		return p
+	return p
+}
+
+func (p *Polynomial) ReduceAny(fns []*Polynomial) *Polynomial {
+	for i := range fns {
+		h := p.Reduce(fns[i])
+		if !p.Equal(h) {
+			fmt.Printf("reduced by %v to %v\n", fns[i], h)
+			return h
+		}
 	}
-	return h
+	return p
+}
+
+func (p *Polynomial) Equal(q *Polynomial) bool {
+	if p == q {
+		return true
+	}
+	if len(p.vars) != len(q.vars) || len(p.items) != len(q.items) {
+		return false
+	}
+	for i := 0; i < len(p.items); i++ {
+		if p.items[i].C.Cmp(&q.items[i].C) != 0 {
+			return false
+		}
+		for j := 0; j < len(p.vars); j++ {
+			if p.items[i].T[j].Cmp(&q.items[i].T[j]) != 0 {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func (p *Polynomial) normalize() {
@@ -285,6 +317,17 @@ func (p *Polynomial) normalize() {
 		}
 	}
 	SortMonomial(p.items, p.order)
+}
+
+func (p *Polynomial) valid() bool {
+	for i := 0; i < len(p.items); i++ {
+		for j := 0; j < len(p.vars); j++ {
+			if p.items[i].T[j].Sign() < 0 {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func (p *Polynomial) findTerm(t Term) int {
@@ -316,6 +359,21 @@ func LexTermOrder(a, b Term) bool {
 		return false
 	}
 	for i := 0; i < len(a); i++ {
+		x := a[i].Cmp(&b[i])
+		if x < 0 {
+			return true
+		} else if x > 0 {
+			return false
+		}
+	}
+	return false
+}
+
+func LexTermOrderRev(a, b Term) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := len(a) - 1; i >= 0; i-- {
 		x := a[i].Cmp(&b[i])
 		if x < 0 {
 			return true

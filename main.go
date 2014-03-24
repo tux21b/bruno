@@ -78,12 +78,17 @@ func (b *Bruno) reset() {
 		},
 		"lexorder": func(p *Polynomial) Expr {
 			p.order = LexTermOrder
-			SortMonomial(p.items, p.order)
+			p.normalize()
 			return p
 		},
 		"totalorder": func(p *Polynomial) Expr {
 			p.order = TotalTermOrder
-			SortMonomial(p.items, p.order)
+			p.normalize()
+			return p
+		},
+		"lexorderrev": func(p *Polynomial) Expr {
+			p.order = LexTermOrderRev
+			p.normalize()
 			return p
 		},
 		"lpp": func(p *Polynomial) Expr {
@@ -140,6 +145,41 @@ func (b *Bruno) reset() {
 				return nil, err
 			}
 			return p.Reduce(f), nil
+		},
+		"reduceany": func(p *Polynomial, fns Expr) (Expr, error) {
+			var fn []*Polynomial
+			if v, ok := fns.(List); ok {
+				fn = make([]*Polynomial, len(v))
+				for i := 0; i < len(v); i++ {
+					f := &Polynomial{vars: p.vars, order: p.order}
+					if err := f.convert(v[i]); err != nil {
+						return nil, err
+					}
+					fn[i] = f
+				}
+			}
+			return p.ReduceAny(fn), nil
+		},
+		"reducemany": func(p *Polynomial, fns Expr) (Expr, error) {
+			var fn []*Polynomial
+			if v, ok := fns.(List); ok {
+				fn = make([]*Polynomial, len(v))
+				for i := 0; i < len(v); i++ {
+					f := &Polynomial{vars: p.vars, order: p.order}
+					if err := f.convert(v[i]); err != nil {
+						return nil, err
+					}
+					fn[i] = f
+				}
+			}
+			h1 := p
+			for {
+				h2 := h1.ReduceAny(fn)
+				if h2.Equal(h1) {
+					return h1, nil
+				}
+				h1 = h2
+			}
 		},
 	}
 }
