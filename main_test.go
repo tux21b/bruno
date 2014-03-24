@@ -16,6 +16,10 @@ var brunoTests = []struct {
 		"3",
 	},
 	{
+		".2 * 5 + 8 / (3 + 1)",
+		"3",
+	},
+	{
 		"identifier",
 		"identifier",
 	},

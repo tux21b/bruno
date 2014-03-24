@@ -236,6 +236,11 @@ func (b *Bruno) ExecExpr(expr Expr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		an, ok1 := a.(Num)
+		bn, ok2 := b.(Num)
+		if ok1 && ok2 {
+			return Num{new(big.Rat).Add(an.Rat, bn.Rat)}, nil
+		}
 		return Add{a, b}, nil
 	case Sub:
 		a, err := b.ExecExpr(x.A)
@@ -245,6 +250,11 @@ func (b *Bruno) ExecExpr(expr Expr) (Expr, error) {
 		b, err := b.ExecExpr(x.B)
 		if err != nil {
 			return nil, err
+		}
+		an, ok1 := a.(Num)
+		bn, ok2 := b.(Num)
+		if ok1 && ok2 {
+			return Num{new(big.Rat).Sub(an.Rat, bn.Rat)}, nil
 		}
 		return Sub{a, b}, nil
 	case Mul:
@@ -270,6 +280,11 @@ func (b *Bruno) ExecExpr(expr Expr) (Expr, error) {
 		b, err := b.ExecExpr(x.B)
 		if err != nil {
 			return nil, err
+		}
+		an, ok1 := a.(Num)
+		bn, ok2 := b.(Num)
+		if ok1 && ok2 {
+			return Num{new(big.Rat).Quo(an.Rat, bn.Rat)}, nil
 		}
 		return Div{a, b}, nil
 	case Pow:
