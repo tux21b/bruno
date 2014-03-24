@@ -1,23 +1,23 @@
-//line grammar.y:1
 
+//line grammar.y:2
 // Copyright (c) 2014 by Christoph Hack <christoph@tux21b.org>
 // All rights reserved. Distributed under the Simplified BSD License.
 
 package main
-
 import __yyfmt__ "fmt"
-
-//line grammar.y:6
+//line grammar.y:5
+		
 import (
 	"fmt"
 	"math/big"
-	"strings"
 	"unicode"
 	"unicode/utf8"
+	"strings"
 )
 
+
 //line grammar.y:19
-type yySymType struct {
+type yySymType struct{
 	yys int
 	val Expr
 }
@@ -43,7 +43,8 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line grammar.y:60
+//line grammar.y:68
+
 
 type Lexer struct {
 	input  string
@@ -115,7 +116,6 @@ func Parse(input string) (Expr, error) {
 	}
 	return l.result, nil
 }
-
 //line yacctab:1
 var yyExca = []int{
 	-1, 1,
@@ -421,100 +421,62 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		//line grammar.y:34
-		{
-			yylex.(*Lexer).result = nil
-		}
-	case 2:
 		//line grammar.y:35
-		{
-			yylex.(*Lexer).result = yyS[yypt-0].val
-		}
+		{ yylex.(*Lexer).result = nil }
+	case 2:
+		//line grammar.y:36
+		{ yylex.(*Lexer).result = yyS[yypt-0].val }
 	case 3:
-		//line grammar.y:39
-		{
-			yyVAL.val = yyS[yypt-0].val
-		}
-	case 4:
 		//line grammar.y:40
-		{
-			yyVAL.val = Assign{yyS[yypt-2].val.(Ident), yyS[yypt-0].val}
-		}
+		{ yyVAL.val = yyS[yypt-0].val }
+	case 4:
+		//line grammar.y:41
+		{ yyVAL.val = Assign{yyS[yypt-2].val.(Ident), yyS[yypt-0].val}}
 	case 5:
-		//line grammar.y:42
-		{
-			yyVAL.val = yyS[yypt-0].val
-		}
-	case 6:
-		//line grammar.y:43
-		{
-			yyVAL.val = yyS[yypt-0].val
-		}
-	case 7:
-		//line grammar.y:44
-		{
-			yyVAL.val = Call{yyS[yypt-3].val.(Ident), yyS[yypt-1].val.(List)}
-		}
-	case 8:
 		//line grammar.y:45
-		{
-			yyVAL.val = yyS[yypt-1].val
-		}
-	case 9:
+		{ yyVAL.val = yyS[yypt-0].val }
+	case 6:
 		//line grammar.y:46
-		{
-			yyVAL.val = yyS[yypt-1].val
-		}
-	case 10:
+		{ yyVAL.val = yyS[yypt-0].val }
+	case 7:
 		//line grammar.y:47
-		{
-			yyVAL.val = Add{yyS[yypt-2].val, yyS[yypt-0].val}
-		}
-	case 11:
+		{ yyVAL.val = Call{yyS[yypt-3].val.(Ident), yyS[yypt-1].val.(List)} }
+	case 8:
 		//line grammar.y:48
-		{
-			yyVAL.val = Sub{yyS[yypt-2].val, yyS[yypt-0].val}
-		}
-	case 12:
+		{ yyVAL.val = yyS[yypt-1].val }
+	case 9:
 		//line grammar.y:49
-		{
-			yyVAL.val = Mul{yyS[yypt-2].val, yyS[yypt-0].val}
-		}
-	case 13:
+		{ yyVAL.val = yyS[yypt-1].val }
+	case 10:
 		//line grammar.y:50
-		{
-			yyVAL.val = Div{yyS[yypt-2].val, yyS[yypt-0].val}
-		}
-	case 14:
+		{ yyVAL.val = Add{yyS[yypt-2].val, yyS[yypt-0].val} }
+	case 11:
 		//line grammar.y:51
-		{
-			yyVAL.val = Mul{Num{big.NewRat(-1, 1)}, yyS[yypt-0].val}
-		}
-	case 15:
+		{ yyVAL.val = Sub{yyS[yypt-2].val, yyS[yypt-0].val} }
+	case 12:
 		//line grammar.y:52
-		{
-			yyVAL.val = Pow{yyS[yypt-2].val, yyS[yypt-0].val}
-		}
-	case 16:
+		{ yyVAL.val = Mul{yyS[yypt-2].val, yyS[yypt-0].val} }
+	case 13:
+		//line grammar.y:53
+		{ yyVAL.val = Div{yyS[yypt-2].val, yyS[yypt-0].val} }
+	case 14:
+		//line grammar.y:54
+		{ yyVAL.val = Mul{Num{big.NewRat(-1, 1)}, yyS[yypt-0].val} }
+	case 15:
 		//line grammar.y:55
-		{
-			yyVAL.val = List{}
-		}
+		{ yyVAL.val = Pow{yyS[yypt-2].val, yyS[yypt-0].val} }
+	case 16:
+		//line grammar.y:59
+		{ yyVAL.val = List{} }
 	case 17:
-		//line grammar.y:56
-		{
-			yyVAL.val = yyS[yypt-0].val
-		}
+		//line grammar.y:60
+		{ yyVAL.val = yyS[yypt-0].val }
 	case 18:
-		//line grammar.y:57
-		{
-			yyVAL.val = List{yyS[yypt-0].val}
-		}
+		//line grammar.y:64
+		{ yyVAL.val = List{yyS[yypt-0].val}}
 	case 19:
-		//line grammar.y:58
-		{
-			yyVAL.val = append(yyS[yypt-2].val.(List), yyS[yypt-0].val)
-		}
+		//line grammar.y:65
+		{ yyVAL.val = append(yyS[yypt-2].val.(List), yyS[yypt-0].val) }
 	}
 	goto yystack /* stack new state and value */
 }

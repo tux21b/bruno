@@ -31,31 +31,39 @@ import (
 
 %%
 
-all : /* empty */ { yylex.(*Lexer).result = nil }
-	| stmt { yylex.(*Lexer).result = $1
-}
+all
+	: /* empty */ { yylex.(*Lexer).result = nil }
+	| stmt { yylex.(*Lexer).result = $1 }
+	;
 
 stmt
 	: expr { $$ = $1 }
 	| ID '=' expr { $$ = Assign{$1.(Ident), $3}}
+	;
 
-expr : NUM { $$ = $1 }
-	 | ID { $$ = $1 }
-	 | ID '(' items ')' { $$ = Call{$1.(Ident), $3.(List)} }
-	 | '(' expr ')' { $$ = $2 }
-	 | '[' items ']' { $$ = $2 }
-     | expr '+' expr { $$ = Add{$1, $3} }
-     | expr '-' expr { $$ = Sub{$1, $3} }
-	 | expr '*' expr { $$ = Mul{$1, $3} }
-	 | expr '/' expr { $$ = Div{$1, $3} }
-	 | '-' expr %prec NEG { $$ = Mul{Num{big.NewRat(-1, 1)}, $2} }
-	 | expr '^' expr { $$ = Pow{$1, $3} }
-	 ;
+expr
+	: NUM { $$ = $1 }
+	| ID { $$ = $1 }
+	| ID '(' items ')' { $$ = Call{$1.(Ident), $3.(List)} }
+	| '(' expr ')' { $$ = $2 }
+	| '[' items ']' { $$ = $2 }
+	| expr '+' expr { $$ = Add{$1, $3} }
+	| expr '-' expr { $$ = Sub{$1, $3} }
+	| expr '*' expr { $$ = Mul{$1, $3} }
+	| expr '/' expr { $$ = Div{$1, $3} }
+	| '-' expr %prec NEG { $$ = Mul{Num{big.NewRat(-1, 1)}, $2} }
+	| expr '^' expr { $$ = Pow{$1, $3} }
+	;
 
-items : /* empty */ { $$ = List{} }
-	  | items2 { $$ = $1 }
-items2 : expr { $$ = List{$1}}
-	  | items2 ',' expr { $$ = append($1.(List), $3) }
+items
+	: /* empty */ { $$ = List{} }
+	| items2 { $$ = $1 }
+	;
+
+items2
+	: expr { $$ = List{$1}}
+	| items2 ',' expr { $$ = append($1.(List), $3) }
+	;
 
 %%
 
